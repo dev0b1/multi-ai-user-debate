@@ -102,8 +102,8 @@ const Index = () => {
                       key={persona.id}
                       className={`flex items-center space-x-3 p-3 rounded-lg border transition-all ${
                         isSelected
-                          ? 'bg-blue-600/20 border-blue-500 cursor-pointer'
-                          : 'bg-gray-700/30 border-gray-600 hover:bg-gray-700/50 cursor-pointer'
+                            ? 'bg-blue-600/20 border-blue-500 cursor-pointer'
+                            : 'bg-gray-700/30 border-gray-600 hover:bg-gray-700/50 cursor-pointer'
                       }`}
                       onClick={() => handlePersonaSelect(persona.id)}
                     >

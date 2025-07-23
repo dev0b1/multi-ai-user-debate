@@ -65,6 +65,19 @@ class PersonaAgent(Agent):
 # Entrypoint Function
 # ----------------------------------------------------------------------------
 
+async def send_chat_message(session, text, sender="AI"):
+    # Send a chat message to the room via LiveKit DataTrack
+    try:
+        # Use the standard LiveKit chat topic
+        topic = "lk.chat"
+        # The message format should be a JSON string with sender and text
+        payload = json.dumps({"sender": sender, "message": text}).encode("utf-8")
+        # session.room is the underlying Room object
+        await session.room.local_participant.publish_data(payload, topic=topic, reliable=True)
+        print(f"[Chat] Sent message: {text}")
+    except Exception as e:
+        print(f"[Chat] Failed to send message: {e}")
+
 async def entrypoint(ctx: agents.JobContext):
     # 1️⃣ Metadata injected by the FastAPI backend
     meta = json.loads(os.getenv("ROOM_METADATA", "{}"))
@@ -133,16 +146,23 @@ async def entrypoint(ctx: agents.JobContext):
     print("Connecting to room...")
     await ctx.connect()
     print("Connected! Starting introduction...")
-    await session.generate_reply(instructions=f"Introduce yourself as {agent.name}, state your assigned stance ({stance_str[ai_stance]}) on the topic: '{topic}', and invite the human to begin the debate.")
+    intro_text = f"Introduce yourself as {agent.name}, state your assigned stance ({stance_str[ai_stance]}) on the topic: '{topic}', and invite the human to begin the debate."
+    ai_intro = await session.generate_reply(instructions=intro_text)
+    await send_chat_message(session, ai_intro, sender=persona)
     print("Introduction complete!")
 
     # 5️⃣ Debate loop: alternate turns for total_rounds (user/ai)
     print(f"Starting debate with {total_rounds} rounds...")
     for round_counter in range(total_rounds):
         print(f"Round {round_counter + 1}: AI's turn")
-        await session.generate_reply()
+        ai_reply = await session.generate_reply()
+        await send_chat_message(session, ai_reply, sender=persona)
         await asyncio.sleep(turn_duration_sec)
         print(f"Round {round_counter + 1}: Human's turn (waiting)")
+        # Listen for user speech, transcribe, and send as chat
+        user_text = await session.listen_and_transcribe()
+        if user_text:
+            await send_chat_message(session, user_text, sender="User")
         await asyncio.sleep(turn_duration_sec)
 
     # 6️⃣ Graceful shutdown
