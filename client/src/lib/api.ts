@@ -1,4 +1,5 @@
 export async function fetchLiveKitCredentials(room: string, user: string, topic: string, persona: string, stance: string) {
+  console.log("[DEBUG] VITE_BACKEND_URL:", import.meta.env.VITE_BACKEND_URL);
   const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/join`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
