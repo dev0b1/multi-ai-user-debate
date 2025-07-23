@@ -15,6 +15,8 @@ const Index = () => {
   const [numberOfTurns, setNumberOfTurns] = useState([4]);
   const [selectedPersona, setSelectedPersona] = useState<string>("");
   const [stance, setStance] = useState<"pro" | "con" | "">("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Famous AI personas to choose from
   const aiPersonas = [
@@ -35,13 +37,30 @@ const Index = () => {
   };
 
   const handleJoinDebate = async () => {
+    setError(null);
+    setLoading(true);
+    console.log("[DEBUG] Start Debate button clicked");
     if (topic.trim() && selectedPersona && stance) {
       const personaData = aiPersonas.find(persona => persona.id === selectedPersona);
       try {
+        console.log("[DEBUG] Attempting to fetch LiveKit credentials...");
         const roomName = topic.replace(/\s+/g, "-").toLowerCase().slice(0, 20) || "main";
         const user = `human-${Math.random().toString(36).slice(2, 8)}`;
         // Send persona, topic, and stance to backend
         const livekit = await fetchLiveKitCredentials(roomName, user, topic, selectedPersona, stance);
+        console.log("[DEBUG] Received LiveKit credentials:", livekit);
+        setError(null);
+        setLoading(false);
+        console.log("[DEBUG] Navigating to /debate with state:", {
+          topic,
+          turnDuration: turnDuration[0],
+          numberOfTurns: numberOfTurns[0],
+          selectedPersona: personaData,
+          stance,
+          livekit,
+          user,
+          room: roomName
+        });
         navigate("/debate", {
           state: {
             topic,
@@ -55,8 +74,14 @@ const Index = () => {
           }
         });
       } catch (err) {
-        console.error("Failed to start debate:", err);
+        setError("Failed to start debate. Please check your connection and try again.");
+        setLoading(false);
+        console.error("[DEBUG] Failed to start debate:", err);
       }
+    } else {
+      setError("Please fill in all fields.");
+      setLoading(false);
+      console.warn("[DEBUG] Missing required fields:", { topic, selectedPersona, stance });
     }
   };
 
@@ -202,7 +227,7 @@ const Index = () => {
             {/* Join Button */}
             <Button 
               onClick={handleJoinDebate}
-              disabled={!topic.trim() || !selectedPersona || !stance}
+              disabled={!topic.trim() || !selectedPersona || !stance || loading}
               className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               Start Debate
@@ -212,6 +237,8 @@ const Index = () => {
                 </span>
               )}
             </Button>
+            {error && <div className="text-red-500">{error}</div>}
+            {loading && <div className="text-blue-500">Starting debate...</div>}
           </CardContent>
         </Card>
 
