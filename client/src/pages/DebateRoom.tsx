@@ -2,12 +2,15 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { LiveKitRoom, Chat, ParticipantTile, ParticipantLoop } from "@livekit/components-react";
+import { LiveKitRoom, Chat, ParticipantTile, ParticipantLoop, useParticipants } from "@livekit/components-react";
 
 const DebateRoom = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const debateConfig = location.state;
+
+  // Get the list of participants from the LiveKit context
+  const participants = useParticipants();
 
   if (!debateConfig || !debateConfig.livekit) {
     return (
@@ -42,7 +45,7 @@ const DebateRoom = () => {
         >
           {/* Video/Audio Tiles */}
           <div className="w-full max-w-2xl mx-auto mt-4">
-            <ParticipantLoop>
+            <ParticipantLoop participants={participants}>
               <ParticipantTile />
             </ParticipantLoop>
           </div>
