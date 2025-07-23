@@ -20,6 +20,9 @@ export default defineConfig(({ mode }) => {
         usePolling: false,
         interval: 1000,
       },
+      proxy: {
+        '/join': 'http://localhost:8000', // Forward /join to backend
+      },
     },
     plugins,
     resolve: {
