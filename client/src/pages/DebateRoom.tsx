@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { LiveKitRoom, ChatEntry } from "@livekit/components-react";
+import { LiveKitRoom, Chat } from "@livekit/components-react";
 
 const DebateRoom = () => {
   const location = useLocation();
@@ -41,7 +41,7 @@ const DebateRoom = () => {
         >
           {/* Chat UI */}
           <div className="w-full max-w-2xl mx-auto mt-4">
-            <ChatEntry />
+            <Chat />
           </div>
         </LiveKitRoom>
       </div>
