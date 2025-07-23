@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "swc": {
+    "forceJs": true
+  },
   "dependencies": {
     "@livekit/components-react": "^2.9.14",
     "@radix-ui/react-checkbox": "^1.1.1",
