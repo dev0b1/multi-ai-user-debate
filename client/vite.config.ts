@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       host: "0.0.0.0",      // ✅ enables external access (e.g. Codespaces)
-      port: 8080,           // or change to 5173 if you prefer
+      port: 5173,           // or change to 5173 if you prefer
       watch: {
         usePolling: false,
         interval: 1000,
