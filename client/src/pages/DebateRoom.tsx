@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { LiveKitRoom, Chat } from "@livekit/components-react";
+import { LiveKitRoom, Chat, ParticipantTile, ParticipantLoop } from "@livekit/components-react";
 
 const DebateRoom = () => {
   const location = useLocation();
@@ -31,14 +31,21 @@ const DebateRoom = () => {
         {/* You can add round/turn info here if needed */}
       </div>
 
-      {/* LiveKit Room with Audio and Chat */}
+      {/* LiveKit Room with Audio, Video, and Chat */}
       <div className="flex flex-col items-center justify-center w-full">
         <LiveKitRoom
           serverUrl={url}
           token={token}
           audio={true}
+          video={true}
           style={{ width: "100%", maxWidth: 800, background: "#18181b", borderRadius: 12, padding: 24 }}
         >
+          {/* Video/Audio Tiles */}
+          <div className="w-full max-w-2xl mx-auto mt-4">
+            <ParticipantLoop>
+              <ParticipantTile />
+            </ParticipantLoop>
+          </div>
           {/* Chat UI */}
           <div className="w-full max-w-2xl mx-auto mt-4">
             <Chat />

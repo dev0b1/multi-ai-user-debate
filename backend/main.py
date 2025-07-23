@@ -18,6 +18,8 @@ LIVEKIT_URL   = os.getenv("LIVEKIT_URL", "wss://your-livekit-host:443")
 API_KEY       = os.getenv("LIVEKIT_API_KEY", "devkey")
 API_SECRET    = os.getenv("LIVEKIT_API_SECRET", "secret")
 
+print(f"[DEBUG] LIVEKIT_API_KEY: {API_KEY}")
+print(f"[DEBUG] LIVEKIT_API_SECRET: {API_SECRET[:4]}... (masked)")
 # Registry of active rooms
 rooms: Dict[str, dict] = {}
 
