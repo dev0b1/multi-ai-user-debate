@@ -1,6 +1,6 @@
 export async function fetchLiveKitCredentials(room: string, user: string, topic: string, persona: string, stance: string) {
-  console.log("[DEBUG] VITE_BACKEND_URL:", import.meta.env.VITE_BACKEND_URL);
-  const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/join`, {
+  // Use a relative URL so Vite's proxy works in dev
+  const response = await fetch('/join', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ room, user, topic, persona, stance }),

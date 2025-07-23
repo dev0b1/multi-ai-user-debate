@@ -81,8 +81,10 @@ async def start_debate_agent_async(room: str, topic: str, persona: str, stance: 
 
 @app.post("/join")
 async def join(request: Request):
+    print("[DEBUG] /join endpoint hit")
     try:
         data = await request.json()
+        print("[DEBUG] /join request data:", data)
         room = data.get("room", "main")
         user = data.get("user")
         topic = data.get("topic", "AI Debate")
