@@ -12,6 +12,8 @@ import jwt
 import time
 from livekit import AccessToken, VideoGrant
 
+import subprocess
+
 # ----------------------------------------------------------------------------
 # ENV ‑ set these in Replit "Secrets" or a local .env file
 # ----------------------------------------------------------------------------
@@ -40,17 +42,27 @@ app.add_middleware(
 def dev_token(room: str, identity: str) -> str:
     api_key = API_KEY
     api_secret = API_SECRET
-    grant = VideoGrant(
-        room=room,
-        can_publish=True,
-        can_subscribe=True,
-        can_publish_data=True,
-        can_publish_sources=["audio"]
-    )
-    at = AccessToken(api_key, api_secret, identity=identity)
-    at.add_grant(grant)
-    at.ttl = 2 * 60 * 60  # 2 hours
-    return at.to_jwt()
+    ttl = int(timedelta(hours=2).total_seconds())
+    try:
+        result = subprocess.run(
+            [
+                "node",
+                "generate_livekit_token.js",
+                api_key,
+                api_secret,
+                room,
+                identity,
+                str(ttl)
+            ],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        token = result.stdout.strip()
+        return token
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] Failed to generate token: {e.stderr}")
+        raise
 
 
 async def start_debate_agent_async(room: str, topic: str, persona: str, stance: str, turn_duration: int, total_rounds: int):
