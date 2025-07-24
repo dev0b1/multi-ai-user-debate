@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import jwt
 import time
+from livekit import AccessToken, VideoGrant
 
 # ----------------------------------------------------------------------------
 # ENV ‑ set these in Replit "Secrets" or a local .env file
@@ -39,23 +40,17 @@ app.add_middleware(
 def dev_token(room: str, identity: str) -> str:
     api_key = API_KEY
     api_secret = API_SECRET
-    now = int(time.time())
-    ttl = int(timedelta(hours=2).total_seconds())
-    payload = {
-        "iss": api_key,
-        "sub": identity,
-        "nbf": now,
-        "exp": now + ttl,
-        "video": {
-            "room": room,
-            "can_publish": True,
-            "can_subscribe": True,
-            "can_publish_data": True,
-            "can_publish_sources": ["audio"],  # Only allow audio publishing
-        }
-    }
-    token = jwt.encode(payload, api_secret, algorithm="HS256")
-    return token
+    grant = VideoGrant(
+        room=room,
+        can_publish=True,
+        can_subscribe=True,
+        can_publish_data=True,
+        can_publish_sources=["audio"]
+    )
+    at = AccessToken(api_key, api_secret, identity=identity)
+    at.add_grant(grant)
+    at.ttl = 2 * 60 * 60  # 2 hours
+    return at.to_jwt()
 
 
 async def start_debate_agent_async(room: str, topic: str, persona: str, stance: str, turn_duration: int, total_rounds: int):
