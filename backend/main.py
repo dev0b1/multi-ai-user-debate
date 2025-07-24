@@ -5,7 +5,7 @@ from typing import Dict
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 
 import jwt
@@ -114,7 +114,7 @@ async def start_debate_agent_async(room: str, topic: str, persona: str, stance: 
 
 
 @app.post("/join")
-async def join(request: Request):
+async def join(request: Request, background_tasks: BackgroundTasks):
     print("[DEBUG] /join endpoint hit")
     try:
         data = await request.json()
@@ -154,13 +154,10 @@ async def join(request: Request):
             }
 
             print(f"[DEBUG] About to launch debate agent for room: {room}, persona: {mapped_persona}, stance: {stance}, turn_duration: {turn_duration}, number_of_turns: {number_of_turns}")
-            try:
-                task = asyncio.create_task(start_debate_agent_async(
-                    room, topic, mapped_persona, stance, turn_duration, number_of_turns
-                ))
-                print(f"[DEBUG] Debate agent task created: {task}")
-            except Exception as e:
-                print(f"[ERROR] Failed to create debate agent task: {e}")
+            background_tasks.add_task(
+                start_debate_agent_async,
+                room, topic, mapped_persona, stance, turn_duration, number_of_turns
+            )
 
         identity = user or f"human-{uuid.uuid4().hex[:6]}"
         return {"url": LIVEKIT_URL, "token": dev_token(room, identity)}
