@@ -50,6 +50,8 @@ def dev_token(room: str, identity: str) -> str:
             "room": room,
             "can_publish": True,
             "can_subscribe": True,
+            "can_publish_data": True,
+            "can_publish_sources": ["audio"],  # Only allow audio publishing
         }
     }
     token = jwt.encode(payload, api_secret, algorithm="HS256")
@@ -89,6 +91,7 @@ async def join(request: Request):
         print("[DEBUG] /join request data:", data)
         room = data.get("room", "main")
         user = data.get("user")
+        print(f"[DEBUG] /join using room: {room}, user: {user}")
         topic = data.get("topic", "AI Debate")
         persona = data.get("persona")  # single persona string
         stance = data.get("stance")     # 'pro' or 'con'
@@ -98,7 +101,7 @@ async def join(request: Request):
         # Map frontend persona ID to backend persona name
         persona_mapping = {
             "socrates": "AI Socrates",
-            "einstein": "AI Einstein", 
+            "einstein": "AI Einstein",
             "trump": "AI Trump",
             "shakespeare": "AI Shakespeare",
             "tesla": "AI Tesla",
@@ -119,10 +122,14 @@ async def join(request: Request):
                 "created_at": datetime.utcnow().isoformat()
             }
 
-            # Start the debate agent asynchronously
-            asyncio.create_task(start_debate_agent_async(
-                room, topic, mapped_persona, stance, turn_duration, number_of_turns
-            ))
+            print(f"[DEBUG] About to launch debate agent for room: {room}, persona: {mapped_persona}, stance: {stance}, turn_duration: {turn_duration}, number_of_turns: {number_of_turns}")
+            try:
+                task = asyncio.create_task(start_debate_agent_async(
+                    room, topic, mapped_persona, stance, turn_duration, number_of_turns
+                ))
+                print(f"[DEBUG] Debate agent task created: {task}")
+            except Exception as e:
+                print(f"[ERROR] Failed to create debate agent task: {e}")
 
         identity = user or f"human-{uuid.uuid4().hex[:6]}"
         return {"url": LIVEKIT_URL, "token": dev_token(room, identity)}
