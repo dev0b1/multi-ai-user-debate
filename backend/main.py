@@ -89,6 +89,7 @@ async def join(request: Request):
     try:
         data = await request.json()
         print("[DEBUG] /join request data:", data)
+        print(f"[DEBUG] data.get('room'): {data.get('room')} (type: {type(data.get('room'))})")
         room = data.get("room", "main")
         user = data.get("user")
         print(f"[DEBUG] /join using room: {room}, user: {user}")
