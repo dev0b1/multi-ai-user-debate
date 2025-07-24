@@ -13,6 +13,7 @@ import time
 
 
 import subprocess
+import traceback
 
 # ----------------------------------------------------------------------------
 # ENV ‑ set these in Replit "Secrets" or a local .env file
@@ -67,7 +68,7 @@ def dev_token(room: str, identity: str) -> str:
 
 
 async def start_debate_agent_async(room: str, topic: str, persona: str, stance: str, turn_duration: int, total_rounds: int):
-    """Start the debate agent asynchronously"""
+    print(f"[DEBUG] Entered start_debate_agent_async for room {room}")
     try:
         # Set environment variables for the agent
         os.environ["ROOM_METADATA"] = json.dumps({
@@ -83,12 +84,33 @@ async def start_debate_agent_async(room: str, topic: str, persona: str, stance: 
         import sys
         from pathlib import Path
         script_dir = Path(__file__).parent
-        subprocess.Popen([
-            sys.executable, "debate_agent.py"
-        ], cwd=script_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(f"Started debate agent for room {room}")
+        print(f"[DEBUG] Launching debate_agent.py with sys.executable={sys.executable} in {script_dir}")
+        try:
+            process = subprocess.Popen([
+                sys.executable, "debate_agent.py"
+            ], cwd=script_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            print(f"[DEBUG] Popen returned process: {process}")
+        except Exception as popen_exc:
+            print(f"[ERROR] Popen failed: {popen_exc}")
+            traceback.print_exc()
+            return
+        # Optionally, read a small amount of output to see if the agent starts
+        try:
+            import time
+            time.sleep(1)  # Give the process a moment to start
+            if process.poll() is not None:
+                print(f"[ERROR] debate_agent.py exited early with code {process.returncode}")
+                stdout, stderr = process.communicate()
+                print(f"[AGENT STDOUT]: {stdout.decode()}")
+                print(f"[AGENT STDERR]: {stderr.decode()}")
+            else:
+                print(f"Started debate agent for room {room}")
+        except Exception as comm_exc:
+            print(f"[ERROR] Exception while reading agent output: {comm_exc}")
+            traceback.print_exc()
     except Exception as e:
-        print(f"Failed to start debate agent for room {room}: {e}")
+        print(f"[ERROR] Failed to start debate agent for room {room}: {e}")
+        traceback.print_exc()
 
 
 @app.post("/join")

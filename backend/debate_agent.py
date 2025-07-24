@@ -17,6 +17,12 @@ from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 load_dotenv()
 
+print("[AGENT] debate_agent.py started")
+import os
+print(f"[AGENT] LIVEKIT_URL: {os.environ.get('LIVEKIT_URL')}")
+print(f"[AGENT] LIVEKIT_TOKEN: {os.environ.get('LIVEKIT_TOKEN')[:10]}... (masked)")
+print(f"[AGENT] LIVEKIT_ROOM_NAME: {os.environ.get('LIVEKIT_ROOM_NAME')}")
+
 # ----------------------------------------------------------------------------
 # Environment Configuration
 # ----------------------------------------------------------------------------
