@@ -59,6 +59,7 @@ def dev_token(room: str, identity: str) -> str:
             check=True
         )
         token = result.stdout.strip()
+        print(f"[DEBUG] Token from Node.js: {token} (type: {type(token)})")
         return token
     except subprocess.CalledProcessError as e:
         print(f"[ERROR] Failed to generate token: {e.stderr}")
