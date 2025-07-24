@@ -18,7 +18,9 @@ async function main() {
     can_publish_data: true,
     can_publish_sources: ['audio'],
   });
-  at.ttl = parseInt(ttlSeconds, 10);
+
+  // Set validUntil to now + ttlSeconds (in seconds)
+  at.validUntil = Math.floor(Date.now() / 1000) + parseInt(ttlSeconds, 10);
 
   const token = await at.toJwt();
   console.log(token);
