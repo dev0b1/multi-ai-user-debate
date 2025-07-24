@@ -9,14 +9,19 @@ if (args.length < 5) {
 
 const [apiKey, apiSecret, room, identity, ttlSeconds] = args;
 
-const at = new AccessToken(apiKey, apiSecret, { identity });
-at.addGrant({
-  room,
-  can_publish: true,
-  can_subscribe: true,
-  can_publish_data: true,
-  can_publish_sources: ['audio'],
-});
-at.ttl = parseInt(ttlSeconds, 10);
+async function main() {
+  const at = new AccessToken(apiKey, apiSecret, { identity });
+  at.addGrant({
+    room,
+    can_publish: true,
+    can_subscribe: true,
+    can_publish_data: true,
+    can_publish_sources: ['audio'],
+  });
+  at.ttl = parseInt(ttlSeconds, 10);
 
-console.log(at.toJwt()); 
+  const token = await at.toJwt();
+  console.log(token);
+}
+
+main(); 
