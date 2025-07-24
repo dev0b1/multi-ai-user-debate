@@ -12,11 +12,12 @@ const [apiKey, apiSecret, room, identity, ttlSeconds] = args;
 async function main() {
   const at = new AccessToken(apiKey, apiSecret, { identity });
   at.addGrant({
+    roomJoin: true,
     room,
-    can_publish: true,
-    can_subscribe: true,
-    can_publish_data: true,
-    can_publish_sources: ['audio'],
+    canPublish: true,
+    canSubscribe: true,
+    canPublishData: true,
+    canUpdateOwnMetadata: true
   });
 
   // Set validUntil to now + ttlSeconds (in seconds)
