@@ -1,8 +1,10 @@
-fastapi>=0.104.0
-uvicorn>=0.24.0
+# LiveKit Agents and dependencies
+livekit-agents>=1.0.0
 python-dotenv>=1.0.0
-livekit-agents[deepgram,openai,cartesia,silero,turn-detector]~=1.0
-livekit-plugins-noise-cancellation~=0.2
-livekit-api>=1.0.0
-pydantic>=2.6.0 
-livekit 
+
+# AI/ML dependencies
+openai>=1.0.0
+deepgram-sdk>=2.0.0
+
+# Note: cartesia-tts and silero-vad are included in livekit-agents
+# If you need standalone versions, install them separately 
