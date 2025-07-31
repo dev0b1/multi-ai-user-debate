@@ -48,23 +48,28 @@ app.get("/health", (req: Request, res: Response) => {
 app.post("/join", async (req: Request<{}, {}, JoinRequest>, res: Response) => {
   try {
     const { room, user, topic, persona, stance, turnDuration = 3, numberOfTurns = 4 } = req.body;
-    
+    console.log(`[JOIN] Received request to join room: ${room}`);
+    console.log(`[JOIN] Params: user=${user}, topic=${topic}, persona=${persona}, stance=${stance}, turnDuration=${turnDuration}, numberOfTurns=${numberOfTurns}`);
     // Validate required fields
     if (!room || !topic || !persona || !stance) {
+      console.warn(`[JOIN] Missing required fields: room, topic, persona, or stance`);
       return res.status(400).json({ 
         error: "Missing required fields: room, topic, persona, and stance are required" 
       });
     }
 
     const identity = user || `human-${Math.random().toString(36).slice(2, 8)}`;
+    console.log(`[JOIN] Generating LiveKit token for identity: ${identity}`);
     const token = await generateToken({
       apiKey: API_KEY,
       apiSecret: API_SECRET,
       room,
       identity,
     });
+    console.log(`[JOIN] LiveKit token generated for room: ${room}`);
 
     // Launch the agent
+    console.log(`[JOIN] Launching agent for room: ${room}`);
     launchAgent({
       room,
       token,
@@ -75,7 +80,10 @@ app.post("/join", async (req: Request<{}, {}, JoinRequest>, res: Response) => {
       turnDuration,
       numberOfTurns,
     });
+    console.log(`[JOIN] Agent launch triggered for room: ${room}`);
 
+    // Respond to client
+    console.log(`[JOIN] Sending response to client for room: ${room}`);
     res.json({ 
       url: LIVEKIT_URL, 
       token,
@@ -89,6 +97,7 @@ app.post("/join", async (req: Request<{}, {}, JoinRequest>, res: Response) => {
         numberOfTurns
       }
     });
+    console.log(`[JOIN] Response sent to client for room: ${room}`);
   } catch (err) {
     console.error("Error in /join endpoint:", err);
     res.status(500).json({ error: "Failed to join room" });
