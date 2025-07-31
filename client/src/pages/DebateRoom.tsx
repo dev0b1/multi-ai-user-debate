@@ -175,7 +175,6 @@ const DebateRoom = () => {
   const [currentTurn, setCurrentTurn] = useState("user");
   const [timeLeft, setTimeLeft] = useState(turnDurationSeconds);
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   // Timer countdown effect
   useEffect(() => {
@@ -200,31 +199,12 @@ const DebateRoom = () => {
     setTimeLeft(turnDurationSeconds);
   };
 
-  const handleConnectionError = (error: Error) => {
-    console.error("LiveKit connection error:", error);
-    setConnectionError("Failed to connect to debate room. Please try again.");
-  };
-
   if (!debateConfig || !debateConfig.livekit) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
           <div className="text-2xl">Connecting to debate room...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (connectionError) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white">
-        <div className="text-center">
-          <div className="text-red-400 text-2xl mb-4">Connection Error</div>
-          <div className="text-lg mb-4">{connectionError}</div>
-          <Button onClick={() => navigate("/")} className="bg-blue-600 hover:bg-blue-700">
-            Back to Setup
-          </Button>
         </div>
       </div>
     );
@@ -315,7 +295,6 @@ const DebateRoom = () => {
               setIsConnected(false);
               navigate("/");
             }}
-            onConnectionError={handleConnectionError}
             className="bg-black/20 backdrop-blur-sm rounded-xl border border-white/10 p-6"
           >
             {/* Audio renderer for proper audio playback */}
