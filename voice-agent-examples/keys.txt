@@ -1,0 +1,11 @@
+sk_car_qzkMqtSqHq6C95WSuVN38J   cartesia
+deb9fe8721cf2269d3e64c5c7b88a59c5201a8ad  deepgram
+
+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 openrouter  brightsky
+
+
+wss://debate-y8tnwoi2.livekit.cloud  livekit url
+
+APIg9ksQnZayi6N  livekit api key
+
+iDL1uWdfbwuNX42W5CYqIwXDShFEn8wl2XjtDVDCaNS   livekit secret
